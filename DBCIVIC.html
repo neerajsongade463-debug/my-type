@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipal Administration Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Your CSS styles remain unchanged */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .login-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .login-card {
+            width: 400px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .login-body {
+            padding: 20px;
+        }
+
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .user-type {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: var(--light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-type.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .dashboard-container {
+            display: none;
+        }
+
+        .sidebar {
+            background: var(--primary);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding-top: 60px;
+            overflow-y: auto;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: calc(100% - 250px);
+            margin-left: 250px;
+            z-index: 1000;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+        }
+
+        .issue-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .issue-pending {
+            border-left-color: var(--warning);
+        }
+
+        .issue-inprogress {
+            border-left-color: var(--secondary);
+        }
+
+        .issue-completed {
+            border-left-color: var(--success);
+        }
+
+        .worker-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .worker-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid var(--secondary);
+        }
+
+        .city-rank {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .rank-1 {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .rank-2 {
+            background: linear-gradient(45deg, #C0C0C0, #A9A9A9);
+            color: white;
+        }
+
+        .rank-3 {
+            background: linear-gradient(45deg, #CD7F32, #8B4513);
+            color: white;
+        }
+
+        .section-title {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .badge-score {
+            font-size: 1rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .resource-item {
+            background: var(--light);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--accent);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toast-container"></div>
+
+    <div class="loading" id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Processing...</p>
+    </div>
+
+    <div class="login-container" id="login-page">
+        <div class="login-card">
+            <div class="login-header">
+                <h3><i class="fas fa-city"></i> Municipal Portal</h3>
+                <p class="mb-0" id="login-header-text">Login to access your dashboard</p>
+            </div>
+            <div class="login-body">
+                <div class="user-type-selector">
+                    <div class="user-type active" id="staff-type">Staff Login</div>
+                    <div class="user-type" id="worker-type">Worker Login</div>
+                </div>
+
+                <div id="staff-login">
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="staff-email" placeholder="name@municipal.gov">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="staff-password"
+                            placeholder="Enter your password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Remember me</label>
+                    </div>
+                    <button class="btn btn-primary w-100" id="staff-login-btn">Login as Staff</button>
+                    <div class="register-link">
+                        Don't have an account? <a href="#" id="show-staff-register">Register here</a>
+                    </div>
+                </div>
+
+                <div id="worker-login" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="worker-email" placeholder="worker@municipal.gov">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="worker-password"
+                            placeholder="Enter your password">
+                    </div>
+                    <button class="btn btn-primary w-100" id="worker-login-btn">Login as Worker</button>
+                    <div class="register-link">
+                        Don't have an account? <a href="#" id="show-worker-register">Register here</a>
+                    </div>
+                </div>
+
+                <div id="staff-register" style="display: none;">
+                    <h5 class="text-center mb-3">Staff Registration</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="staff-register-name"
+                            placeholder="Enter your full name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="staff-register-email"
+                            placeholder="name@municipal.gov">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="staff-register-password"
+                            placeholder="Create a password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="staff-register-confirm"
+                            placeholder="Confirm your password">
+                    </div>
+                    <button class="btn btn-success w-100" id="staff-register-btn">Register as Staff</button>
+                    <div class="register-link">
+                        Already have an account? <a href="#" id="show-staff-login">Login here</a>
+                    </div>
+                </div>
+
+                <div id="worker-register" style="display: none;">
+                    <h5 class="text-center mb-3">Worker Registration</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="worker-register-name"
+                            placeholder="Enter your full name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="worker-register-email"
+                            placeholder="worker@municipal.gov">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Worker ID</label>
+                        <input type="text" class="form-control" id="worker-register-id"
+                            placeholder="Enter your worker ID">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="worker-register-password"
+                            placeholder="Create a password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="worker-register-confirm"
+                            placeholder="Confirm your password">
+                    </div>
+                    <button class="btn btn-success w-100" id="worker-register-btn">Register as Worker</button>
+                    <div class="register-link">
+                        Already have an account? <a href="#" id="show-worker-login">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container" id="staff-dashboard">
+        <div class="sidebar" style="width: 250px;">
+            <h4 class="text-center mb-4">Municipal Staff</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="staff-dashboard-section"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="staff-issue-management"><i class="fas fa-tasks"></i> Issue Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="staff-performance"><i class="fas fa-user-tie"></i> Staff Performance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="workers-performance"><i class="fas fa-hard-hat"></i> Workers Performance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="issues-overview"><i class="fas fa-chart-pie"></i> Issues Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="city-rankings"><i class="fas fa-trophy"></i> City Rankings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <span class="navbar-brand">Staff Dashboard</span>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://i.pravatar.cc/40?u=staff" alt="user" width="40" height="40" class="rounded-circle me-2">
+                            <span>John Smith</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div class="dashboard-section active" id="staff-dashboard-section">
+                <div class="container-fluid">
+                    <h2 class="section-title">Dashboard Overview</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>Total Issues</h5>
+                                        <h2>142</h2>
+                                    </div>
+                                    <div class="stats-icon">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>Pending</h5>
+                                        <h2>38</h2>
+                                    </div>
+                                    <div class="stats-icon text-warning">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-warning" style="width: 27%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>In Progress</h5>
+                                        <h2>24</h2>
+                                    </div>
+                                    <div class="stats-icon text-info">
+                                        <i class="fas fa-spinner"></i>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-info" style="width: 17%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h5>Completed</h5>
+                                        <h2>80</h2>
+                                    </div>
+                                    <div class="stats-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3" style="height: 5px;">
+                                    <div class="progress-bar bg-success" style="width: 56%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="stats-card">
+                                <h4>Recent Issues</h4>
+                                <div class="issue-card issue-pending">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6>Pothole on Main Street</h6>
+                                            <p class="mb-0">Reported by: John Doe</p>
+                                            <small>Location: Main St & 5th Ave</small>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-warning">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="issue-card issue-inprogress">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6>Garbage Collection Missed</h6>
+                                            <p class="mb-0">Reported by: Sarah Johnson</p>
+                                            <small>Location: Oakwood Area</small>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-info">In Progress</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="issue-card issue-completed">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h6>Broken Streetlight</h6>
+                                            <p class="mb-0">Reported by: Michael Brown</p>
+                                            <small>Location: Central Park West</small>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success">Completed</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <h4>Top Workers</h4>
+                                <div class="worker-card">
+                                    <img src="https://i.pravatar.cc/80?u=worker1" class="worker-avatar">
+                                    <h5>Robert Johnson</h5>
+                                    <p class="mb-1">Sanitation Department</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Tasks: 42</span>
+                                        <span>Rating: 4.8</span>
+                                    </div>
+                                </div>
+                                <div class="worker-card">
+                                    <img src="https://i.pravatar.cc/80?u=worker2" class="worker-avatar">
+                                    <h5>James Wilson</h5>
+                                    <p class="mb-1">Road Maintenance</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Tasks: 38</span>
+                                        <span>Rating: 4.7</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="staff-issue-management">
+                <div class="container-fluid">
+                    <h2 class="section-title">Issue Management</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4>All Reported Issues</h4>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary me-2"><i class="fas fa-filter"></i> Filter</button>
+                                        <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i> Export</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Issue Type</th>
+                                                <th>Location</th>
+                                                <th>Reported By</th>
+                                                <th>Date</th>
+                                                <th>Priority</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>#IS-2871</td>
+                                                <td>Pothole</td>
+                                                <td>Main St & 5th Ave</td>
+                                                <td>John Doe</td>
+                                                <td>12 Oct 2023</td>
+                                                <td><span class="badge bg-danger">High</span></td>
+                                                <td><span class="badge bg-warning">Pending</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">Assign</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">View</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#IS-2870</td>
+                                                <td>Garbage Collection</td>
+                                                <td>Oakwood Area</td>
+                                                <td>Sarah Johnson</td>
+                                                <td>11 Oct 2023</td>
+                                                <td><span class="badge bg-warning">Medium</span></td>
+                                                <td><span class="badge bg-info">In Progress</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary">Track</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">View</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#IS-2865</td>
+                                                <td>Broken Streetlight</td>
+                                                <td>Central Park West</td>
+                                                <td>Michael Brown</td>
+                                                <td>10 Oct 2023</td>
+                                                <td><span class="badge bg-success">Low</span></td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-success">Verify</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">View</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#IS-2862</td>
+                                                <td>Water Leakage</td>
+                                                <td>Maple Street</td>
+                                                <td>Emma Wilson</td>
+                                                <td>09 Oct 2023</td>
+                                                <td><span class="badge bg-danger">High</span></td>
+                                                <td><span class="badge bg-warning">Pending</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">Assign</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">View</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>#IS-2858</td>
+                                                <td>Park Maintenance</td>
+                                                <td>Riverside Park</td>
+                                                <td>City Council</td>
+                                                <td>08 Oct 2023</td>
+                                                <td><span class="badge bg-warning">Medium</span></td>
+                                                <td><span class="badge bg-info">In Progress</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary">Track</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">View</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Assign Issue to Worker</h4>
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Issue</label>
+                                        <select class="form-select">
+                                            <option selected>Choose issue to assign...</option>
+                                            <option>#IS-2871 - Pothole on Main St</option>
+                                            <option>#IS-2862 - Water Leakage on Maple Street</option>
+                                            <option>#IS-2869 - Broken Bench in Central Park</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Assign to Worker</label>
+                                        <select class="form-select">
+                                            <option selected>Select worker...</option>
+                                            <option>Robert Johnson (Sanitation)</option>
+                                            <option>James Wilson (Road Maintenance)</option>
+                                            <option>Michael Brown (Electrical)</option>
+                                            <option>Sarah Davis (Plumbing)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Priority Level</label>
+                                        <select class="form-select">
+                                            <option>Low</option>
+                                            <option selected>Medium</option>
+                                            <option>High</option>
+                                            <option>Emergency</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Deadline</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Additional Instructions</label>
+                                        <textarea class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Assign Task</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Issue Statistics by Category</h4>
+                                <div class="chart-container">
+                                    <canvas id="issueCategoryChart"></canvas>
+                                </div>
+                                
+                                <h4 class="mt-4">Resolution Time by Department</h4>
+                                <div class="chart-container">
+                                    <canvas id="resolutionTimeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="staff-performance">
+                <div class="container-fluid">
+                    <h2 class="section-title">Staff Performance</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="stats-card">
+                                <h4>Staff Performance Metrics</h4>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Staff Member</th>
+                                                <th>Department</th>
+                                                <th>Issues Handled</th>
+                                                <th>Avg. Resolution Time</th>
+                                                <th>Citizen Satisfaction</th>
+                                                <th>Productivity Score</th>
+                                                <th>Performance Trend</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>John Smith</td>
+                                                <td>Public Works</td>
+                                                <td>142</td>
+                                                <td>2.3 days</td>
+                                                <td>4.8/5</td>
+                                                <td><span class="badge bg-success badge-score">92%</span></td>
+                                                <td><i class="fas fa-arrow-up text-success"></i> Improving</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Emma Johnson</td>
+                                                <td>Sanitation</td>
+                                                <td>128</td>
+                                                <td>1.8 days</td>
+                                                <td>4.7/5</td>
+                                                <td><span class="badge bg-success badge-score">89%</span></td>
+                                                <td><i class="fas fa-arrow-up text-success"></i> Improving</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Michael Brown</td>
+                                                <td>Road Maintenance</td>
+                                                <td>115</td>
+                                                <td>3.1 days</td>
+                                                <td>4.5/5</td>
+                                                <td><span class="badge bg-warning badge-score">78%</span></td>
+                                                <td><i class="fas fa-arrow-down text-danger"></i> Declining</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sarah Davis</td>
+                                                <td>Water Management</td>
+                                                <td>98</td>
+                                                <td>2.7 days</td>
+                                                <td>4.6/5</td>
+                                                <td><span class="badge bg-success badge-score">85%</span></td>
+                                                <td><i class="fas fa-arrow-up text-success"></i> Improving</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Robert Wilson</td>
+                                                <td>Electrical</td>
+                                                <td>87</td>
+                                                <td>3.5 days</td>
+                                                <td>4.3/5</td>
+                                                <td><span class="badge bg-warning badge-score">72%</span></td>
+                                                <td><i class="fas fa-minus text-secondary"></i> Stable</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Productivity Overview</h4>
+                                <div class="chart-container">
+                                    <canvas id="productivityChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Top Performers</h4>
+                                <div class="worker-card">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://i.pravatar.cc/60?u=staff" class="worker-avatar">
+                                        <div class="ms-3">
+                                            <h5>John Smith</h5>
+                                            <p class="mb-1">Public Works Department</p>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Score: 92%</span>
+                                                <span>Rank: #1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="worker-card">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://i.pravatar.cc/60?u=staff2" class="worker-avatar">
+                                        <div class="ms-3">
+                                            <h5>Emma Johnson</h5>
+                                            <p class="mb-1">Sanitation Department</p>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Score: 89%</span>
+                                                <span>Rank: #2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="mt-4">Recognition</h4>
+                                <div class="resource-item">
+                                    <h6>Employee of the Month</h6>
+                                    <p class="mb-1">John Smith - Public Works</p>
+                                    <small>For exceptional handling of the downtown renovation project</small>
+                                </div>
+                                <div class="resource-item">
+                                    <h6>Most Improved</h6>
+                                    <p class="mb-1">Sarah Davis - Water Management</p>
+                                    <small>25% improvement in resolution time this quarter</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="workers-performance">
+                <div class="container-fluid">
+                    <h2 class="section-title">Workers Performance</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="stats-card">
+                                <h4>Workers Performance Metrics</h4>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Worker</th>
+                                                <th>Department</th>
+                                                <th>Tasks Completed</th>
+                                                <th>Avg. Time per Task</th>
+                                                <th>Quality Score</th>
+                                                <th>Productivity Score</th>
+                                                <th>Performance Trend</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Robert Johnson</td>
+                                                <td>Sanitation</td>
+                                                <td>42</td>
+                                                <td>3.2 hours</td>
+                                                <td>4.8/5</td>
+                                                <td><span class="badge bg-success badge-score">94%</span></td>
+                                                <td><i class="fas fa-arrow-up text-success"></i> Improving</td>
+                                            </tr>
+                                            <tr>
+                                                <td>James Wilson</td>
+                                                <td>Road Maintenance</td>
+                                                <td>38</td>
+                                                <td>4.1 hours</td>
+                                                <td>4.7/5</td>
+                                                <td><span class="badge bg-success badge-score">88%</span></td>
+                                                <td><i class="fas fa-arrow-up text-success"></i> Improving</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Maria Garcia</td>
+                                                <td>Parks & Rec</td>
+                                                <td>35</td>
+                                                <td>3.8 hours</td>
+                                                <td>4.9/5</td>
+                                                <td><span class="badge bg-success badge-score">91%</span></td>
+                                                <td><i class="fas fa-minus text-secondary"></i> Stable</td>
+                                            </tr>
+                                            <tr>
+                                                <td>David Miller</td>
+                                                <td>Electrical</td>
+                                                <td>29</td>
+                                                <td>5.2 hours</td>
+                                                <td>4.4/5</td>
+                                                <td><span class="badge bg-warning badge-score">75%</span></td>
+                                                <td><i class="fas fa-arrow-down text-danger"></i> Declining</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Tasks Completed by Department</h4>
+                                <div class="chart-container">
+                                    <canvas id="tasksByDeptChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Worker Leaderboard</h4>
+                                <div class="worker-card">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://i.pravatar.cc/60?u=worker1" class="worker-avatar">
+                                        <div class="ms-3 text-start">
+                                            <h5>Robert Johnson</h5>
+                                            <p class="mb-1">Sanitation</p>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <span>Score: 94%</span>
+                                                <span class="fw-bold">Rank: #1</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="worker-card">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://i.pravatar.cc/60?u=worker3" class="worker-avatar">
+                                        <div class="ms-3 text-start">
+                                            <h5>Maria Garcia</h5>
+                                            <p class="mb-1">Parks & Rec</p>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <span>Score: 91%</span>
+                                                <span class="fw-bold">Rank: #2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="issues-overview">
+                <div class="container-fluid">
+                    <h2 class="section-title">Issues Overview</h2>
+                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Issues by Status</h4>
+                                <div class="chart-container">
+                                    <canvas id="issueStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-card">
+                                <h4>Issues Reported This Month</h4>
+                                <div class="chart-container" style="height:300px">
+                                    <canvas id="issuesOverTimeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section" id="city-rankings">
+                <div class="container-fluid">
+                    <h2 class="section-title">City Cleanliness Rankings (Swachh Survekshan)</h2>
+                     <div class="row">
+                        <div class="col-md-8">
+                            <div class="city-rank rank-1">
+                                <h3><i class="fas fa-trophy"></i> 1st Place: Indore</h3>
+                                <p>Consistently leading in waste management and citizen participation.</p>
+                            </div>
+                            <div class="city-rank rank-2">
+                                <h4><i class="fas fa-medal"></i> 2nd Place: Surat</h4>
+                                <p>Strong performance in sustainable sanitation and public awareness.</p>
+                            </div>
+                             <div class="city-rank rank-3">
+                                <h4><i class="fas fa-award"></i> 3rd Place: Navi Mumbai</h4>
+                                <p>Excellent scores in segregated waste collection and processing.</p>
+                            </div>
+                             <div class="city-rank">
+                                <h5>4th Place: Visakhapatnam</h5>
+                                <p>Notable for its clean beaches and public spaces.</p>
+                            </div>
+                             <div class="city-rank">
+                                <h5>5th Place: Bhopal</h5>
+                                <p>Making significant strides in sustainable waste management practices.</p>
+                            </div>
+                        </div>
+                         <div class="col-md-4">
+                            <div class="stats-card">
+                                <h4>Our City's Score</h4>
+                                 <div class="text-center">
+                                    <h1 class="display-3">87.2</h1>
+                                    <p class="lead">out of 100</p>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" style="width: 87.2%">87.2%</div>
+                                    </div>
+                                    <p class="mt-3"><i class="fas fa-arrow-up text-success"></i> <strong>5.4% improvement</strong> from last year.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="dashboard-container" id="worker-dashboard">
+        <div class="sidebar" style="width: 250px;">
+            <h4 class="text-center mb-4">Municipal Worker</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="worker-tasks"><i class="fas fa-clipboard-list"></i> My Tasks</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="worker-completed"><i class="fas fa-check-double"></i> Completed Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="worker-profile"><i class="fas fa-user"></i> My Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <span class="navbar-brand">Worker Dashboard</span>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://i.pravatar.cc/40?u=worker1" alt="user" width="40" height="40" class="rounded-circle me-2">
+                            <span>Robert Johnson</span>
+                        </a>
+                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="main-content">
+             <div class="dashboard-section active" id="worker-tasks">
+                 <h2 class="section-title">My Assigned Tasks (3)</h2>
+                 
+                 <div class="issue-card issue-pending">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>#IS-2870 - Garbage Collection Missed</h6>
+                            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> Oakwood Area</p>
+                            <small class="text-danger"><strong>Deadline:</strong> 13 Oct 2023</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-danger">High Priority</span>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-info">Start Task</button>
+                                <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="issue-card issue-inprogress">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>#IS-2858 - Park Maintenance</h6>
+                            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> Riverside Park</p>
+                            <small><strong>Deadline:</strong> 15 Oct 2023</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning">Medium Priority</span>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-success">Mark as Done</button>
+                                 <button class="btn btn-sm btn-outline-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+             <div class="dashboard-section" id="worker-completed">
+                <h2 class="section-title">Completed Tasks</h2>
+                 <div class="issue-card issue-completed">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>#IS-2850 - Clean Public Restroom</h6>
+                            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> Downtown Plaza</p>
+                            <small><strong>Completed On:</strong> 10 Oct 2023</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Completed</span>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             
+              <div class="dashboard-section" id="worker-profile">
+                <h2 class="section-title">My Profile</h2>
+                  <div class="stats-card">
+                      <div class="text-center">
+                           <img src="https://i.pravatar.cc/120?u=worker1" class="worker-avatar" style="width:120px; height:120px;">
+                           <h3>Robert Johnson</h3>
+                           <p class="text-muted">ID: #WKR-001 | Sanitation Department</p>
+                      </div>
+                      <hr>
+                       <p><strong>Tasks Completed:</strong> 42</p>
+                       <p><strong>Average Rating:</strong> 4.8 / 5.0</p>
+                       <p><strong>Joined On:</strong> 15 Jan 2021</p>
+                  </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart instances
+            let issueCategoryChart, resolutionTimeChart, productivityChart, tasksByDeptChart, issueStatusChart, issuesOverTimeChart;
+
+            // ---- LOGIN AND REGISTRATION LOGIC ----
+            const loginPage = document.getElementById('login-page');
+            const staffDashboard = document.getElementById('staff-dashboard');
+            const workerDashboard = document.getElementById('worker-dashboard');
+
+            // User type selection
+            document.getElementById('staff-type').addEventListener('click', () => switchLoginType('staff'));
+            document.getElementById('worker-type').addEventListener('click', () => switchLoginType('worker'));
+            
+            // Show registration forms
+            document.getElementById('show-staff-register').addEventListener('click', () => toggleForms('staff', true));
+            document.getElementById('show-worker-register').addEventListener('click', () => toggleForms('worker', true));
+            
+            // Show login forms from registration
+            document.getElementById('show-staff-login').addEventListener('click', () => toggleForms('staff', false));
+            document.getElementById('show-worker-login').addEventListener('click', () => toggleForms('worker', false));
+
+            function switchLoginType(type) {
+                document.getElementById('staff-type').classList.toggle('active', type === 'staff');
+                document.getElementById('worker-type').classList.toggle('active', type === 'worker');
+                document.getElementById('staff-login').style.display = type === 'staff' ? 'block' : 'none';
+                document.getElementById('worker-login').style.display = type === 'worker' ? 'block' : 'none';
+                document.getElementById('staff-register').style.display = 'none';
+                document.getElementById('worker-register').style.display = 'none';
+            }
+
+            function toggleForms(userType, showRegister) {
+                if (userType === 'staff') {
+                    document.getElementById('staff-login').style.display = showRegister ? 'none' : 'block';
+                    document.getElementById('staff-register').style.display = showRegister ? 'block' : 'none';
+                    document.getElementById('login-header-text').innerText = showRegister ? 'Register as Staff' : 'Login to access your dashboard';
+                } else {
+                    document.getElementById('worker-login').style.display = showRegister ? 'none' : 'block';
+                    document.getElementById('worker-register').style.display = showRegister ? 'block' : 'none';
+                     document.getElementById('login-header-text').innerText = showRegister ? 'Register as a Worker' : 'Login to access your dashboard';
+                }
+            }
+            
+            // ---- MONGODB INTEGRATION POINT: LOGIN ----
+            document.getElementById('staff-login-btn').addEventListener('click', () => {
+                const email = document.getElementById('staff-email').value;
+                const password = document.getElementById('staff-password').value;
+
+                // **TODO: API call to your backend**
+                // POST to /api/staff/login with { email, password }
+                // Your backend would then query MongoDB to verify credentials.
+                // On success, the API should return a token and user data.
+
+                console.log('Simulating staff login for:', email);
+                showToast('Login successful! Welcome back.');
+                loginPage.style.display = 'none';
+                staffDashboard.style.display = 'block';
+                initializeAllCharts();
+            });
+
+            document.getElementById('worker-login-btn').addEventListener('click', () => {
+                const email = document.getElementById('worker-email').value;
+                const password = document.getElementById('worker-password').value;
+
+                 // **TODO: API call to your backend**
+                // POST to /api/worker/login with { email, password }
+                // On success, API returns token and worker data.
+
+                console.log('Simulating worker login for:', email);
+                showToast('Login successful! Viewing your tasks.');
+                loginPage.style.display = 'none';
+                workerDashboard.style.display = 'block';
+            });
+            
+             // ---- MONGODB INTEGRATION POINT: REGISTRATION ----
+            document.getElementById('staff-register-btn').addEventListener('click', () => {
+                // **TODO: API call to your backend**
+                // POST to /api/staff/register with registration data.
+                // Your backend would validate and create a new staff document in MongoDB.
+                showToast('Staff registration successful! Please log in.');
+                toggleForms('staff', false); // Switch to login form
+            });
+
+            document.getElementById('worker-register-btn').addEventListener('click', () => {
+                // **TODO: API call to your backend**
+                // POST to /api/worker/register with registration data.
+                // Your backend would create a new worker document in MongoDB.
+                showToast('Worker registration successful! Please log in.');
+                toggleForms('worker', false); // Switch to login form
+            });
+
+
+            // ---- DASHBOARD NAVIGATION ----
+            function setupNavLinks(dashboardId) {
+                const dashboard = document.getElementById(dashboardId);
+                if (!dashboard) return;
+                
+                const navLinks = dashboard.querySelectorAll('.sidebar .nav-link[data-section]');
+                const sections = dashboard.querySelectorAll('.dashboard-section');
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetSectionId = link.getAttribute('data-section');
+
+                        // Update active link
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+
+                        // Show target section
+                        sections.forEach(sec => {
+                            sec.classList.toggle('active', sec.id === targetSectionId);
+                        });
+                    });
+                });
+            }
+            
+            setupNavLinks('staff-dashboard');
+            setupNavLinks('worker-dashboard');
+
+
+            // ---- LOGOUT FUNCTION ----
+            window.logout = function () {
+                // **TODO: API call to your backend to invalidate the token**
+                // POST to /api/logout
+                staffDashboard.style.display = 'none';
+                workerDashboard.style.display = 'none';
+                loginPage.style.display = 'flex';
+                showToast('You have been logged out.');
+            };
+
+            // ---- TOAST NOTIFICATION ----
+            function showToast(message, type = 'success') {
+                const toastContainer = document.querySelector('.toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-dark border-0 ${type === 'error' ? 'error' : ''}`;
+                toast.setAttribute('role', 'alert');
+                toast.setAttribute('aria-live', 'assertive');
+                toast.setAttribute('aria-atomic', 'true');
+                
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                `;
+                toastContainer.appendChild(toast);
+                
+                const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+                bsToast.show();
+                toast.addEventListener('hidden.bs.toast', () => toast.remove());
+            }
+
+            // ---- CHART INITIALIZATION ----
+            // **TODO: All chart data should be fetched from your MongoDB via an API call.**
+            // GET /api/dashboard-stats
+            
+            function initializeAllCharts() {
+                 if (!issueCategoryChart) {
+                    issueCategoryChart = new Chart(document.getElementById('issueCategoryChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Roads', 'Sanitation', 'Water', 'Electrical', 'Parks'],
+                            datasets: [{
+                                data: [45, 30, 25, 18, 12],
+                                backgroundColor: ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6'],
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                if (!resolutionTimeChart) {
+                    resolutionTimeChart = new Chart(document.getElementById('resolutionTimeChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Roads', 'Sanitation', 'Water', 'Electrical'],
+                            datasets: [{
+                                label: 'Avg. Resolution Time (Days)',
+                                data: [3.1, 1.8, 2.7, 3.5],
+                                backgroundColor: '#27ae60'
+                            }]
+                        },
+                         options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+                    });
+                }
+                
+                if (!productivityChart) {
+                    productivityChart = new Chart(document.getElementById('productivityChart'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Issues Resolved',
+                                data: [65, 59, 80, 81, 56, 55],
+                                fill: false,
+                                borderColor: '#3498db',
+                                tension: 0.1
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+                
+                if (!tasksByDeptChart) {
+                     tasksByDeptChart = new Chart(document.getElementById('tasksByDeptChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Sanitation', 'Roads', 'Parks', 'Electrical', 'Water'],
+                            datasets: [{
+                                label: 'Tasks Completed This Month',
+                                data: [42, 38, 35, 29, 25],
+                                backgroundColor: ['#2c3e50', '#3498db', '#27ae60', '#f39c12', '#e74c3c'],
+                            }]
+                        },
+                         options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+                
+                 if (!issueStatusChart) {
+                     issueStatusChart = new Chart(document.getElementById('issueStatusChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: ['Pending', 'In Progress', 'Completed'],
+                            datasets: [{
+                                data: [38, 24, 80],
+                                backgroundColor: ['#f39c12', '#3498db', '#27ae60'],
+                            }]
+                        },
+                         options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                if (!issuesOverTimeChart) {
+                     issuesOverTimeChart = new Chart(document.getElementById('issuesOverTimeChart'), {
+                        type: 'line',
+                        data: {
+                            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                            datasets: [{
+                                label: 'Issues Reported',
+                                data: [22, 35, 28, 41],
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                fill: true,
+                            }]
+                        },
+                         options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
